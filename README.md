@@ -30,3 +30,5 @@ Ansys AEDT 2025 (HFSS) × Claude Code + PyAEDT 全流程自动化 —— 建模 
 - **Claude Code** — 终端自动化任务编排
 
 纯静态单页站点（HTML + CSS，无构建步骤），部署于 GitHub Pages。
+
+完整报告 PPT（轻奢白金版 · 15 页）随仓库发布，可在[网站尾页](https://foyfan.github.io/tws-antenna-report/)下载，或直接获取 [assets/TWS耳机多频段天线仿真SOP与工程报告_轻奢白金版.pptx](assets/TWS耳机多频段天线仿真SOP与工程报告_轻奢白金版.pptx)。

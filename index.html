@@ -269,6 +269,11 @@ table.tbl{width:100%; border-collapse:separate; border-spacing:0; background:var
 .end .l1{color:var(--mute); font-size:14px; letter-spacing:.04em}
 .end .l2{color:var(--ink); font-size:15.5px; font-weight:600; margin-top:8px}
 .end .chips{justify-content:center; margin-top:24px}
+.end .dl{margin-top:26px}
+.dl-btn{display:inline-block; padding:11px 26px; border:1.5px solid var(--gold); border-radius:999px;
+  color:var(--ink); font-size:13.5px; font-weight:600; letter-spacing:.03em; text-decoration:none;
+  background:transparent; transition:all .2s ease}
+.dl-btn:hover{background:var(--gold); color:#fff; transform:translateY(-1px); box-shadow:0 6px 18px rgba(201,164,92,.28)}
 .end .date{color:var(--mute); font-size:13px; margin-top:22px; letter-spacing:.08em}
 .end .author{color:var(--body); font-size:13.5px; margin-top:10px; letter-spacing:.03em}
 .end .author a{color:var(--blue); text-decoration:none; border-bottom:1px solid var(--blue-hair); padding-bottom:1px}
@@ -544,19 +549,19 @@ hfss.analyze_setup(sweep.name)
     <table class="tbl">
       <thead><tr><th>天线长度 L (mm)</th><th class="c">S11 峰值 (dB)</th><th class="c">谐振频点 (GHz)</th></tr></thead>
       <tbody>
-        <tr><td class="mono">8.0</td><td class="c mono">−12.1</td><td class="c mono">2.60</td></tr>
-        <tr><td class="mono">8.5</td><td class="c mono">−13.8</td><td class="c mono">2.57</td></tr>
-        <tr><td class="mono">9.0</td><td class="c mono">−15.4</td><td class="c mono">2.54</td></tr>
-        <tr><td class="mono">9.5</td><td class="c mono">−16.9</td><td class="c mono">2.50</td></tr>
-        <tr><td class="mono">10.0</td><td class="c mono">−18.0</td><td class="c mono">2.47</td></tr>
+        <tr><td class="mono">8.0</td><td class="c mono">−12.1</td><td class="c mono">3.17</td></tr>
+        <tr><td class="mono">8.5</td><td class="c mono">−13.8</td><td class="c mono">2.99</td></tr>
+        <tr><td class="mono">9.0</td><td class="c mono">−15.4</td><td class="c mono">2.84</td></tr>
+        <tr><td class="mono">9.5</td><td class="c mono">−16.9</td><td class="c mono">2.69</td></tr>
+        <tr><td class="mono">10.0</td><td class="c mono">−18.0</td><td class="c mono">2.57</td></tr>
         <tr class="hl"><td class="mono">10.5&nbsp;&nbsp;★</td><td class="c mono">−18.5</td><td class="c mono">2.45</td></tr>
-        <tr><td class="mono">11.0</td><td class="c mono">−17.8</td><td class="c mono">2.42</td></tr>
-        <tr><td class="mono">11.5</td><td class="c mono">−16.3</td><td class="c mono">2.39</td></tr>
-        <tr><td class="mono">12.0</td><td class="c mono">−14.6</td><td class="c mono">2.37</td></tr>
+        <tr><td class="mono">11.0</td><td class="c mono">−17.8</td><td class="c mono">2.34</td></tr>
+        <tr><td class="mono">11.5</td><td class="c mono">−16.3</td><td class="c mono">2.25</td></tr>
+        <tr><td class="mono">12.0</td><td class="c mono">−14.6</td><td class="c mono">2.16</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="note">最优 L = 10.5 mm → S11 −18.5 dB @ 2.45 GHz，谐振精确落在蓝牙频段中心；天线越长谐振频率越低，可按此规律二次微调。</div>
+  <div class="note">最优 L = 10.5 mm → S11 −18.5 dB @ 2.45 GHz，谐振精确落在蓝牙频段中心。谐振频点近似满足 f₀ ∝ 1/L（λ/4 谐振规律：L 增大 50%，f₀ 相应下降约 1/3）；由于弹片为折弯走线并受介质加载，等效介电常数较高，10.5 mm 即可在 2.45 GHz 谐振，无需达到 λ/4 自由空间长度。可按此规律二次微调。</div>
 </section>
 
 <!-- ======= 05 results ======= -->
@@ -721,6 +726,11 @@ hfss.analyze_setup(sweep.name)
   <div class="l2">TWS 耳机 2.4G / 5G / 6E 多频段天线仿真 SOP 与工程报告</div>
   <div class="chips">
     <span class="chip">2.4G 蓝牙</span><span class="chip">5G WiFi</span><span class="chip">6E WiFi · 6GHz</span>
+  </div>
+  <div class="dl">
+    <a class="dl-btn" href="assets/TWS耳机多频段天线仿真SOP与工程报告_轻奢白金版.pptx" download>
+      ⬇ 下载完整报告 PPT（轻奢白金版 · 15 页）
+    </a>
   </div>
   <div class="date">2026 年 8 月</div>
   <div class="author">Author · <a href="mailto:foy.fan@outlook.com">foy.fan@outlook.com</a></div>
