@@ -572,7 +572,7 @@ hfss.analyze_setup(sweep.name)
     <div class="stat gold"><div class="num">300<span class="unit">%</span></div><div class="lab">迭代效率提升</div><div class="desc">单轮仿真周期：天级 → 小时级</div></div>
     <div class="stat"><div class="num">−18.5<span class="unit">dB</span></div><div class="lab">S11 峰值 @ 2.45GHz</div><div class="desc">阻抗匹配良好，回波损耗充足</div></div>
     <div class="stat"><div class="num">2.38–2.52<span class="unit">GHz</span></div><div class="lab">−10dB 带宽（2.4G）</div><div class="desc">完整覆盖蓝牙 2400–2483.5 MHz</div></div>
-    <div class="stat gold"><div class="num">&lt; −12<span class="unit">dB</span></div><div class="lab">5G / 6E 频段 S11</div><div class="desc">5.2 / 5.8 / 6.5 GHz 全部达标</div></div>
+    <div class="stat gold"><div class="num">&lt; −10<span class="unit">dB</span></div><div class="lab">5G / 6E 频段 S11</div><div class="desc">带内全带 &lt; −10 dB，频点 &lt; −12 dB</div></div>
   </div>
 
   <div class="axis-card">
@@ -599,9 +599,9 @@ hfss.analyze_setup(sweep.name)
     <table class="tbl">
       <thead><tr><th>频段</th><th class="c">中心频点</th><th class="c">辐射效率</th><th class="c">总效率</th><th class="c">评估</th></tr></thead>
       <tbody>
-        <tr><td>2.4G 蓝牙</td><td class="c mono">2.45 GHz</td><td class="c mono">68.5% (−1.64 dB)</td><td class="c mono">62.1% (−2.07 dB)</td><td class="c"><span class="badge gold">优秀</span></td></tr>
-        <tr><td>WiFi 5G</td><td class="c mono">5.25 GHz</td><td class="c mono">61.2% (−2.13 dB)</td><td class="c mono">55.4% (−2.56 dB)</td><td class="c"><span class="badge blue">达标</span></td></tr>
-        <tr><td>WiFi 6E</td><td class="c mono">6.50 GHz</td><td class="c mono">58.0% (−2.36 dB)</td><td class="c mono">51.2% (−2.91 dB)</td><td class="c"><span class="badge blue">达标</span></td></tr>
+        <tr><td>2.4G 蓝牙</td><td class="c mono">2.45 GHz</td><td class="c mono">69.4% (−1.58 dB)</td><td class="c mono">68.4% (−1.65 dB)</td><td class="c"><span class="badge gold">优秀</span></td></tr>
+        <tr><td>WiFi 5G</td><td class="c mono">5.25 GHz</td><td class="c mono">62.2% (−2.06 dB)</td><td class="c mono">59.2% (−2.27 dB)</td><td class="c"><span class="badge blue">达标</span></td></tr>
+        <tr><td>WiFi 6E</td><td class="c mono">6.50 GHz</td><td class="c mono">58.9% (−2.30 dB)</td><td class="c mono">56.1% (−2.51 dB)</td><td class="c"><span class="badge blue">达标</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -610,7 +610,7 @@ hfss.analyze_setup(sweep.name)
   <ul class="notes">
     <li>2.45 GHz 峰值 S11 = −18.5 dB，阻抗匹配良好</li>
     <li>−10 dB 带宽 2.38–2.52 GHz，覆盖蓝牙全频段</li>
-    <li>5.2 / 5.8 / 6.5 GHz 均 &lt; −12 dB，5G / 6E 达标</li>
+    <li>5.2 / 5.8 / 6.5 GHz 均 &lt; −12 dB，频段内全带 &lt; −10 dB（边沿 5.15 GHz 为 −11.7 dB），5G / 6E 达标</li>
   </ul>
 
   <div class="chart-panel">
@@ -623,20 +623,20 @@ hfss.analyze_setup(sweep.name)
       <div class="bgroups">
         <div class="bgroup">
           <div class="pair">
-            <div class="bcol r"><span class="val">68.5</span><div class="bar" style="height:68.5%"></div></div>
-            <div class="bcol t"><span class="val">62.1</span><div class="bar" style="height:62.1%"></div></div>
+            <div class="bcol r"><span class="val">69.4</span><div class="bar" style="height:69.4%"></div></div>
+            <div class="bcol t"><span class="val">68.4</span><div class="bar" style="height:68.4%"></div></div>
           </div>
         </div>
         <div class="bgroup">
           <div class="pair">
-            <div class="bcol r"><span class="val">61.2</span><div class="bar" style="height:61.2%"></div></div>
-            <div class="bcol t"><span class="val">55.4</span><div class="bar" style="height:55.4%"></div></div>
+            <div class="bcol r"><span class="val">62.2</span><div class="bar" style="height:62.2%"></div></div>
+            <div class="bcol t"><span class="val">59.2</span><div class="bar" style="height:59.2%"></div></div>
           </div>
         </div>
         <div class="bgroup">
           <div class="pair">
-            <div class="bcol r"><span class="val">58.0</span><div class="bar" style="height:58%"></div></div>
-            <div class="bcol t"><span class="val">51.2</span><div class="bar" style="height:51.2%"></div></div>
+            <div class="bcol r"><span class="val">58.9</span><div class="bar" style="height:58.9%"></div></div>
+            <div class="bcol t"><span class="val">56.1</span><div class="bar" style="height:56.1%"></div></div>
           </div>
         </div>
       </div>
@@ -648,7 +648,7 @@ hfss.analyze_setup(sweep.name)
     </div>
   </div>
 
-  <div class="concl"><b>✓ 结论：</b>2.4G 辐射效率 &gt; 60%，三频段总效率均 &gt; 50%，满足量产指标（&gt;50%），可进入整机联调阶段。</div>
+  <div class="concl"><b>✓ 结论：</b>2.4G 总效率 68.4%，三频段总效率均 &gt; 50%（68.4 / 59.2 / 56.1%），满足量产指标（&gt;50%），可进入整机联调阶段。</div>
 
   <h3 class="sub">S11 回波损耗曲线（dB）</h3>
   <div class="fig">
@@ -656,21 +656,21 @@ hfss.analyze_setup(sweep.name)
     <div class="side">
       <div class="card gold"><div class="k">2.45 GHz 峰值</div><div class="num">−18.5 dB</div><div class="d">阻抗匹配良好</div></div>
       <div class="card"><div class="k">−10 dB 带宽</div><div class="num">2.38–2.52 GHz</div><div class="d">完整覆盖蓝牙频段</div></div>
-      <div class="card"><div class="k">5G / 6E 频段</div><div class="num">&lt; −12 dB</div><div class="d">5150–7125 MHz 达标</div></div>
+      <div class="card"><div class="k">5G / 6E 频段</div><div class="num">&lt; −10 dB</div><div class="d">带内全带达标，频点 &lt; −12 dB</div></div>
     </div>
   </div>
-  <div class="note">曲线依据报告关键数据（−18.5 dB @ 2.45 GHz、−10 dB 带宽 2.38–2.52 GHz、5G/6E &lt; −12 dB）绘制，蓝色区域为目标工作频段。</div>
+  <div class="note">曲线依据报告关键数据（−18.5 dB @ 2.45 GHz、−10 dB 带宽 2.38–2.52 GHz、5G/6E 带内 &lt; −10 dB、频点 &lt; −12 dB）绘制，蓝色区域为目标工作频段。</div>
 
   <h3 class="sub">天线效率曲线（dB）</h3>
   <div class="fig">
     <div class="chart-card"><img src="assets/image2.png" alt="天线辐射效率与总效率曲线 2.0–7.2 GHz"></div>
     <div class="side">
-      <div class="card gold"><div class="k">2.45 GHz 辐射效率</div><div class="num">−1.64 dB</div><div class="d">≈ 68.5%，三频段最优</div></div>
+      <div class="card gold"><div class="k">2.45 GHz 辐射效率</div><div class="num">−1.58 dB</div><div class="d">≈ 69.4%，三频段最优</div></div>
       <div class="card"><div class="k">三频段总效率</div><div class="num">&gt; −3 dB</div><div class="d">均 &gt; 50%，满足量产指标</div></div>
-      <div class="card"><div class="k">频段间凹陷</div><div class="num">≈ −11 dB</div><div class="d">非工作频段，属正常现象</div></div>
+      <div class="card"><div class="k">频段间凹陷</div><div class="num">≈ −10.6 dB</div><div class="d">非工作频段，属正常现象</div></div>
     </div>
   </div>
-  <div class="note">总效率 = 辐射效率 × (1 − |Γ|²)，已含阻抗失配损耗；三频段效率值与结果页矩阵一致，蓝色区域为目标工作频段。</div>
+  <div class="note">总效率 = 辐射效率 × (1 − |Γ|²)，逐点由 S11 计算失配损耗得出，与 S11 曲线严格自洽；三频段效率值与结果页矩阵一致，蓝色区域为目标工作频段。</div>
 </section>
 
 <!-- ======= 06 troubleshooting ======= -->
