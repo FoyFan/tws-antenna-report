@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TWS 耳机多频段天线仿真 SOP 与工程报告</title>
+<meta name="description" content="TWS 耳机 2.4G / 5G / 6E 多频段天线仿真 SOP 与工程报告 — Ansys AEDT 2025 (HFSS) × Claude Code + PyAEDT 全流程自动化">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%A1%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --white:#FFFFFF; --panel:#F7F9FC; --hair:#E4E9F0;
+  --ink:#17293D; --body:#46586B; --mute:#8FA0B3;
+  --blue:#1E5BDD; --blue-soft:#E9F1FD; --blue-hair:#D4E2F7;
+  --gold:#B28A4A; --gold-soft:#F6EFE3; --gold-hair:#E7D9BF;
+  --green:#1F8F5F; --green-soft:#EAF6F0;
+  --red:#C4453A;
+  --code-bg:#F8FAFD; --code:#2A3848;
+  --ck:#1E5BDD; --cs:#1F7A4D; --cn:#B26A00; --cc:#94A3B4;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:"PingFang SC","Helvetica Neue","Segoe UI","Microsoft YaHei",sans-serif;
+  background:var(--white); color:var(--body); font-size:16px; line-height:1.75;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+a{color:var(--blue); text-decoration:none}
+.wrap{max-width:1120px; margin:0 auto; padding:0 24px}
+section{scroll-margin-top:84px}
+
+/* ---------- topbar ---------- */
+.topbar{position:sticky; top:0; z-index:50; background:rgba(255,255,255,.86);
+  backdrop-filter:saturate(1.4) blur(14px); -webkit-backdrop-filter:saturate(1.4) blur(14px);
+  border-bottom:1px solid var(--hair)}
+.topbar .wrap{display:flex; align-items:center; justify-content:space-between; height:58px}
+.brand{display:flex; align-items:center; gap:9px; color:var(--ink); font-weight:600; font-size:14.5px; letter-spacing:.02em}
+.brand i{width:8px; height:8px; border-radius:50%; background:var(--gold); display:inline-block}
+.topnav{display:flex; gap:22px}
+.topnav a{color:var(--body); font-size:13.5px}
+.topnav a:hover{color:var(--blue)}
+@media(max-width:760px){.topnav{display:none}}
+
+/* ---------- hero ---------- */
+.hero{position:relative; padding:84px 0 60px; border-bottom:1px solid var(--hair); overflow:hidden}
+.rings{position:absolute; right:-140px; top:-140px; width:460px; height:460px; pointer-events:none}
+.rings i{position:absolute; border-radius:50%}
+.rings i:nth-child(1){inset:0; border:1px solid var(--blue-hair)}
+.rings i:nth-child(2){inset:56px; border:1px solid var(--blue-hair)}
+.rings i:nth-child(3){inset:112px; border:1px solid var(--gold-hair)}
+.rings i:nth-child(4){inset:168px; background:var(--blue-soft); opacity:.5}
+.eyebrow-row{display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap}
+.eyebrow{color:var(--gold); font-size:12.5px; font-weight:600; letter-spacing:.22em}
+.eyebrow-row .date{color:var(--mute); font-size:12.5px; letter-spacing:.08em}
+.hero h1{margin-top:26px; font-size:40px; line-height:1.32; color:var(--ink); font-weight:700; letter-spacing:.01em}
+.hero h1 .hl{color:var(--blue)}
+.hero .sub{margin-top:18px; font-size:16.5px; color:var(--body); max-width:760px}
+.chips{display:flex; gap:10px; flex-wrap:wrap; margin-top:26px}
+.chip{padding:6px 15px; border-radius:999px; font-size:13px; font-weight:600;
+  background:var(--blue-soft); color:var(--blue); border:1px solid var(--blue-hair)}
+.chip.gold{background:var(--gold-soft); color:var(--gold); border:1px solid var(--gold-hair)}
+.metric-strip{display:grid; grid-template-columns:repeat(4,1fr); gap:0; margin-top:52px;
+  border-top:1px solid var(--hair)}
+.metric-strip .m{padding:20px 22px 4px 0}
+.metric-strip .m + .m{padding-left:22px; border-left:1px solid var(--hair)}
+.metric-strip .k{color:var(--mute); font-size:12.5px; letter-spacing:.04em}
+.metric-strip .v{color:var(--ink); font-size:14.5px; font-weight:600; margin-top:5px; font-family:"SF Mono",Consolas,Menlo,monospace; font-size:13.5px}
+@media(max-width:900px){.metric-strip{grid-template-columns:1fr 1fr}
+  .metric-strip .m + .m{padding-left:0; border-left:none}
+  .metric-strip .m{border-top:1px dashed var(--hair)}}
+@media(max-width:560px){.hero h1{font-size:30px}}
+
+/* ---------- section header ---------- */
+.sec{padding:76px 0 8px}
+.sec-head .eyebrow{display:block}
+.sec-head h2{margin-top:14px; font-size:29px; color:var(--ink); font-weight:700; letter-spacing:.01em}
+.bars{display:flex; gap:6px; margin-top:16px}
+.bars i{height:4px; border-radius:2px; display:inline-block}
+.bars .b1{width:42px; background:var(--gold)}
+.bars .b2{width:12px; background:var(--blue)}
+.lead{margin-top:18px; color:var(--body); max-width:820px; font-size:15.5px}
+h3.sub{margin:52px 0 20px; font-size:19px; color:var(--ink); font-weight:700}
+h3.sub small{color:var(--mute); font-weight:500; font-size:13px; margin-left:10px; letter-spacing:.06em}
+
+/* ---------- cards ---------- */
+.grid{display:grid; gap:16px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:980px){.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.g4,.g3,.g2{grid-template-columns:1fr}}
+.card{background:var(--panel); border:1px solid var(--hair); border-radius:14px; padding:20px 22px}
+.card .k{color:var(--mute); font-size:12px; letter-spacing:.1em; font-weight:600}
+.card .t{color:var(--ink); font-size:16.5px; font-weight:650; margin-top:6px}
+.card .d{color:var(--body); font-size:13.5px; margin-top:7px; line-height:1.7}
+
+/* flow */
+.flow{display:grid; grid-template-columns:1fr 26px 1fr 26px 1fr 26px 1fr; gap:0; align-items:stretch; margin-top:26px}
+.flow .arr{align-self:center; text-align:center; color:var(--mute); font-size:18px}
+@media(max-width:900px){.flow{grid-template-columns:1fr; gap:12px}
+  .flow .arr{display:none}}
+
+/* key metrics */
+.metric-cards{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:16px}
+@media(max-width:980px){.metric-cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.metric-cards{grid-template-columns:1fr}}
+.metric-cards .card{border-top:3px solid var(--gold)}
+.metric-cards .card:nth-child(even){border-top-color:var(--blue)}
+
+/* checklist */
+.check .t{display:flex; gap:10px; align-items:baseline}
+.check .tick{color:var(--blue); font-weight:700; flex:none}
+
+/* terminal */
+.term{background:var(--ink); border-radius:14px; overflow:hidden; margin-top:22px;
+  box-shadow:0 10px 28px rgba(23,41,61,.14)}
+.term .tbar{display:flex; align-items:center; gap:7px; padding:12px 18px; border-bottom:1px solid rgba(255,255,255,.08)}
+.term .tbar i{width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,.18)}
+.term .tbar i:nth-child(1){background:#E06A5A}.term .tbar i:nth-child(2){background:#E3B34C}.term .tbar i:nth-child(3){background:#5CBF7A}
+.term .tbar span{color:rgba(255,255,255,.55); font-size:12px; margin-left:8px; font-family:Consolas,Menlo,monospace}
+.term pre{padding:18px 22px; font-family:"SF Mono",Consolas,Menlo,monospace; font-size:13.5px; line-height:2.0; overflow-x:auto}
+.term .p{color:rgba(255,255,255,.92)}
+.term .g{color:#5CBF7A}
+
+/* dependency list */
+.deps{margin-top:22px; border:1px solid var(--hair); border-radius:14px; overflow:hidden}
+.dep{display:flex; gap:18px; align-items:baseline; padding:14px 22px; background:var(--white)}
+.dep + .dep{border-top:1px solid var(--hair)}
+.dep code{color:var(--blue); font-family:Consolas,Menlo,monospace; font-size:13.5px; font-weight:600; flex:none; min-width:250px}
+.dep span{font-size:14px; color:var(--body)}
+
+/* tip / note / callout / conclusion */
+.tip{margin-top:22px; background:var(--gold-soft); border-left:3px solid var(--gold);
+  border-radius:0 12px 12px 0; padding:15px 20px; font-size:14px; color:var(--ink)}
+.tip b{color:var(--gold)}
+.tip code{background:rgba(255,255,255,.7); border:1px solid var(--gold-hair); border-radius:6px; padding:1px 7px; font-family:Consolas,Menlo,monospace; font-size:12.5px}
+.note{margin-top:18px; border-left:3px solid var(--blue); background:var(--panel);
+  border-radius:0 12px 12px 0; padding:14px 20px; font-size:14px; color:var(--body)}
+.callout{margin-top:20px; background:var(--blue-soft); border:1px solid var(--blue-hair);
+  border-radius:12px; padding:16px 22px}
+.callout .ct{color:var(--blue); font-weight:650; font-size:14.5px}
+.callout .cf{color:var(--ink); font-family:Consolas,Menlo,monospace; font-size:13.5px; margin-top:6px}
+.concl{margin-top:22px; background:var(--green-soft); border-left:3px solid var(--green);
+  border-radius:0 12px 12px 0; padding:15px 20px; font-size:14.5px; color:var(--ink)}
+.concl b{color:var(--green)}
+
+/* purpose bar */
+.purpose{margin-top:18px; background:var(--panel); border:1px dashed var(--blue-hair);
+  border-radius:12px; padding:13px 20px; font-size:14px; color:var(--ink)}
+.purpose b{color:var(--blue)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto; border-radius:12px; border:1px solid var(--hair)}
+table.tbl{width:100%; border-collapse:separate; border-spacing:0; background:var(--white); min-width:520px}
+.tbl th{background:var(--ink); color:#fff; font-size:13px; font-weight:600; text-align:left;
+  padding:11px 18px; letter-spacing:.03em; white-space:nowrap}
+.tbl td{padding:12px 18px; font-size:14px; color:var(--body); border-top:1px solid var(--hair); white-space:nowrap}
+.tbl td.c, .tbl th.c{text-align:center}
+.tbl td.mono{font-family:Consolas,Menlo,monospace; font-size:13.5px}
+.tbl tr.hl td{background:var(--gold-soft); color:var(--ink); font-weight:600}
+.badge{display:inline-block; padding:2px 12px; border-radius:999px; font-size:12.5px; font-weight:600}
+.badge.gold{background:var(--gold-soft); color:var(--gold); border:1px solid var(--gold-hair)}
+.badge.blue{background:var(--blue-soft); color:var(--blue); border:1px solid var(--blue-hair)}
+
+/* notes list */
+.notes{margin-top:16px; display:grid; gap:9px}
+.notes li{list-style:none; display:flex; gap:10px; align-items:baseline; font-size:14px; color:var(--body)}
+.notes li::before{content:""; width:6px; height:6px; background:var(--gold); border-radius:2px; flex:none; transform:translateY(-2px)}
+
+/* spec rows */
+.specs{border:1px solid var(--hair); border-radius:14px; overflow:hidden; margin-top:6px}
+.spec{display:flex; justify-content:space-between; align-items:baseline; gap:20px; padding:13px 22px; background:var(--white)}
+.spec + .spec{border-top:1px solid var(--hair)}
+.spec .k{color:var(--body); font-size:14px}
+.spec .v{color:var(--ink); font-family:Consolas,Menlo,monospace; font-size:13.5px; font-weight:600; text-align:right}
+@media(max-width:560px){.spec{flex-direction:column; gap:2px}.spec .v{text-align:left}}
+
+/* code panel */
+.code{background:var(--code-bg); border:1px solid var(--hair); border-radius:14px; overflow:hidden; margin-top:14px}
+.code-head{display:flex; justify-content:space-between; align-items:center; padding:11px 20px; border-bottom:1px solid var(--hair)}
+.code-head .fn{font-family:Consolas,Menlo,monospace; font-size:12.5px; color:var(--mute)}
+.code-head .lang{font-size:11px; letter-spacing:.14em; color:var(--blue); font-weight:700;
+  background:var(--blue-soft); border:1px solid var(--blue-hair); padding:2px 10px; border-radius:999px}
+.code pre{padding:18px 22px; overflow-x:auto; font-family:"SF Mono",Consolas,Menlo,monospace;
+  font-size:13.5px; line-height:1.85; color:var(--code)}
+.ck{color:var(--ck); font-weight:600}
+.cs{color:var(--cs)}
+.cn{color:var(--cn)}
+.cc{color:var(--cc)}
+
+/* stat cards */
+.stat{background:var(--panel); border:1px solid var(--hair); border-radius:14px; padding:22px 24px}
+.stat .num{font-size:34px; font-weight:700; color:var(--blue); letter-spacing:.01em; line-height:1.2}
+.stat .num .unit{font-size:15px; font-weight:600; color:var(--mute); margin-left:5px}
+.stat.gold .num{color:var(--gold)}
+.stat .lab{color:var(--ink); font-size:15px; font-weight:650; margin-top:10px}
+.stat .desc{color:var(--mute); font-size:13px; margin-top:5px; line-height:1.6}
+
+/* band axis */
+.axis-card{background:var(--white); border:1px solid var(--hair); border-radius:14px; padding:26px 28px 18px; margin-top:22px}
+.axis-card .at{color:var(--ink); font-weight:650; font-size:15px}
+.axis-card .as{color:var(--mute); font-size:12.5px; font-family:Consolas,Menlo,monospace; margin-left:12px}
+.axis{position:relative; height:104px; margin-top:30px}
+.axis .line{position:absolute; left:0; right:0; bottom:26px; height:1px; background:var(--hair)}
+.axis .tick{position:absolute; bottom:2px; transform:translateX(-50%); color:var(--mute);
+  font-family:Consolas,Menlo,monospace; font-size:11.5px}
+.axis .bar{position:absolute; bottom:26px; height:14px; transform:translateY(100%); border-radius:7px}
+.axis .bar.blue{background:var(--blue); opacity:.85}
+.axis .bar.gold{background:var(--gold); opacity:.9}
+.axis .blab{position:absolute; bottom:52px; transform:translateX(-2px); font-size:12.5px; font-weight:650; white-space:nowrap}
+.axis .blab.blue{color:var(--blue)}
+.axis .blab.gold{color:var(--gold)}
+.axis .blab small{color:var(--mute); font-weight:500; font-family:Consolas,Menlo,monospace; margin-left:6px; font-size:11.5px}
+
+/* bar chart */
+.chart-panel{background:var(--white); border:1px solid var(--hair); border-radius:14px; padding:24px 26px; margin-top:18px}
+.chart-panel .cp-head{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:10px}
+.chart-panel .cp-t{color:var(--ink); font-weight:650; font-size:15px}
+.legend{display:flex; gap:18px; font-size:12.5px; color:var(--body)}
+.legend i{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; transform:translateY(1px)}
+.legend .l1 i{background:var(--blue)} .legend .l2 i{background:var(--gold)}
+.bars-area{position:relative; height:236px; margin-top:34px}
+.limit{position:absolute; left:0; right:0; bottom:50%; border-top:2px dashed var(--red); opacity:.55}
+.limit span{position:absolute; right:0; top:-24px; color:var(--red); font-size:12px; font-weight:600}
+.bgroups{display:grid; grid-template-columns:repeat(3,1fr); height:100%; gap:24px}
+.bgroup{display:flex; flex-direction:column; align-items:center; height:100%}
+.pair{display:flex; gap:14px; align-items:flex-end; justify-content:center; height:100%; width:100%}
+.bcol{display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; flex:1; max-width:64px}
+.bcol .val{color:var(--ink); font-size:12.5px; font-weight:600; font-family:Consolas,Menlo,monospace; margin-bottom:6px}
+.bcol .bar{width:100%; border-radius:8px 8px 3px 3px}
+.bcol.r .bar{background:var(--blue)} .bcol.t .bar{background:var(--gold)}
+.bglab{margin-top:12px; font-size:13px; color:var(--body); text-align:center}
+@media(max-width:640px){.bgroups{gap:10px}.pair{gap:8px}}
+
+/* chart cards (curve figures) */
+.fig{display:grid; grid-template-columns:1fr 300px; gap:16px; margin-top:18px; align-items:start}
+@media(max-width:980px){.fig{grid-template-columns:1fr}}
+.chart-card{background:var(--white); border:1px solid var(--hair); border-radius:14px; padding:16px}
+.chart-card img{width:100%; height:auto; display:block; border-radius:8px}
+.side{display:grid; gap:12px}
+.side .card{border-top:3px solid var(--blue)}
+.side .card.gold{border-top-color:var(--gold)}
+.side .num{font-family:Consolas,Menlo,monospace; font-size:21px; font-weight:700; color:var(--blue); margin-top:8px}
+.side .card.gold .num{color:var(--gold)}
+
+/* troubleshooting */
+.qa{background:var(--white); border:1px solid var(--hair); border-radius:16px; padding:26px 28px; margin-top:20px}
+.qa-head{display:flex; gap:14px; align-items:center}
+.qa-head .qn{flex:none; width:40px; height:40px; border-radius:12px; background:var(--gold-soft);
+  color:var(--gold); font-weight:700; display:flex; align-items:center; justify-content:center; font-size:15px}
+.qa-head .qt{color:var(--ink); font-size:17.5px; font-weight:700}
+.qa .sym{margin-top:16px; font-size:14px; color:var(--body); background:var(--panel);
+  border-radius:10px; padding:11px 16px}
+.qa .sym b{color:var(--red); font-weight:650; margin-right:8px}
+.qa ol{margin:16px 0 0 4px; list-style:none; display:grid; gap:10px}
+.qa ol li{display:flex; gap:12px; font-size:14px; color:var(--body); align-items:baseline}
+.qa ol li i{flex:none; width:20px; height:20px; border-radius:50%; background:var(--blue-soft);
+  color:var(--blue); font-size:11.5px; font-weight:700; font-style:normal;
+  display:flex; align-items:center; justify-content:center; transform:translateY(3px)}
+.sol{margin-top:18px; background:var(--ink); border-radius:12px; padding:16px 20px}
+.sol .sk{color:var(--gold); font-size:11.5px; letter-spacing:.18em; font-weight:700}
+.sol code{display:block; margin-top:8px; color:#fff; font-family:Consolas,Menlo,monospace; font-size:14px}
+.sol .sd{color:rgba(255,255,255,.6); font-size:12.5px; margin-top:7px}
+
+/* end / footer */
+.end{padding:96px 0 70px; text-align:center; position:relative; overflow:hidden}
+.end .rings{right:50%; top:auto; bottom:-210px; transform:translateX(50%)}
+.end h2{font-size:34px; color:var(--ink); font-weight:700}
+.end .gbar{width:56px; height:4px; background:var(--gold); border-radius:2px; margin:22px auto}
+.end .l1{color:var(--mute); font-size:14px; letter-spacing:.04em}
+.end .l2{color:var(--ink); font-size:15.5px; font-weight:600; margin-top:8px}
+.end .chips{justify-content:center; margin-top:24px}
+.end .date{color:var(--mute); font-size:13px; margin-top:22px; letter-spacing:.08em}
+footer{border-top:1px solid var(--hair); padding:22px 0 30px}
+footer .wrap{display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;
+  color:var(--mute); font-size:12.5px}
+</style>
+</head>
+<body>
+
+<!-- ======= topbar ======= -->
+<div class="topbar">
+  <div class="wrap">
+    <div class="brand"><i></i>TWS 多频段天线仿真报告</div>
+    <nav class="topnav">
+      <a href="#overview">概述</a><a href="#env">环境</a><a href="#sop">SOP</a>
+      <a href="#script">脚本</a><a href="#params">扫参</a><a href="#results">结果</a><a href="#trouble">排查</a>
+    </nav>
+  </div>
+</div>
+
+<!-- ======= hero / cover ======= -->
+<header class="hero">
+  <div class="rings"><i></i><i></i><i></i><i></i></div>
+  <div class="wrap">
+    <div class="eyebrow-row">
+      <span class="eyebrow">ANSYS AEDT 2025 · HFSS × CLAUDE CODE · PYAEDT</span>
+      <span class="date">2026 年 8 月</span>
+    </div>
+    <h1>TWS 耳机 2.4G / 5G / 6E<br><span class="hl">多频段天线仿真 · SOP 与工程报告</span></h1>
+    <p class="sub">Claude Code 终端自动化 × PyAEDT 驱动 Ansys AEDT 全流程 —— 建模 · 求解 · 后处理 · 报告输出</p>
+    <div class="chips">
+      <span class="chip">2.4G 蓝牙</span><span class="chip">5G WiFi</span>
+      <span class="chip">6E WiFi · 6GHz</span><span class="chip gold">HFSS 全波求解</span>
+    </div>
+    <div class="metric-strip">
+      <div class="m"><div class="k">S11 回波损耗</div><div class="v">2400–2483.5 / 5150–7125 MHz</div></div>
+      <div class="m"><div class="k">辐射效率</div><div class="v">Radiated Efficiency · %</div></div>
+      <div class="m"><div class="k">总效率</div><div class="v">Total Efficiency · 含失配</div></div>
+      <div class="m"><div class="k">3D 方向图</div><div class="v">Radiation Pattern · Gain</div></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ======= 00 contents ======= -->
+<section class="sec" id="contents">
+  <div class="sec-head">
+    <span class="eyebrow">CONTENTS · 目录</span>
+    <h2>报告目录</h2>
+    <div class="bars"><i class="b1"></i><i class="b2"></i></div>
+  </div>
+  <div class="grid g3" style="margin-top:30px">
+    <a class="card" href="#overview" style="display:block"><div class="k">01</div><div class="t">项目概述与技术架构</div><div class="d">Claude Code + PyAEDT + AEDT 三层架构与核心指标</div></a>
+    <a class="card" href="#env" style="display:block"><div class="k">02</div><div class="t">环境准备</div><div class="d">系统、软件要求与依赖安装</div></a>
+    <a class="card" href="#sop" style="display:block"><div class="k">03</div><div class="t">仿真 SOP · 四步法</div><div class="d">CAD 清理 → 材料设置 → 端口边界 → 网格求解</div></a>
+    <a class="card" href="#script" style="display:block"><div class="k">04</div><div class="t">PyAEDT 自动化脚本</div><div class="d">建模、求解、导出与天线长度扫参</div></a>
+    <a class="card" href="#results" style="display:block"><div class="k">05</div><div class="t">仿真结果与评估</div><div class="d">S11 / 效率曲线 / 效率矩阵 / 量产结论</div></a>
+    <a class="card" href="#trouble" style="display:block"><div class="k">06</div><div class="t">常见问题排查</div><div class="d">COM 连接错误与 6GHz 网格收敛</div></a>
+  </div>
+</section>
+
+<!-- ======= 01 overview ======= -->
+<section class="sec" id="overview">
+  <div class="sec-head">
+    <span class="eyebrow">SECTION 01 · OVERVIEW</span>
+    <h2>项目概述与技术架构</h2>
+    <div class="bars"><i class="b1"></i><i class="b2"></i></div>
+    <p class="lead">面向 TWS（真无线立体声）耳机内置天线，覆盖 2.4GHz 蓝牙 与 5GHz / 6GHz WiFi 6E 频段；以 Claude Code 为终端自动化核心，通过 PyAEDT Python API 驱动 Ansys AEDT 2025 (HFSS)，完成建模、求解、后处理与报告输出的全流程自动化。</p>
+  </div>
+
+  <div class="flow">
+    <div class="card"><div class="k">终端自动化核心</div><div class="t">Claude Code</div><div class="d">自然语言指令 · 任务编排</div></div>
+    <div class="arr">→</div>
+    <div class="card"><div class="k">Python API 驱动层</div><div class="t">PyAEDT</div><div class="d">脚本化建模与求解控制</div></div>
+    <div class="arr">→</div>
+    <div class="card"><div class="k">三维电磁求解器</div><div class="t">AEDT 2025 · HFSS</div><div class="d">自适应网格 · 全波求解</div></div>
+    <div class="arr">→</div>
+    <div class="card"><div class="k">结果自动输出</div><div class="t">CSV · 工程报告</div><div class="d">S11 · 效率 · 方向图</div></div>
+  </div>
+
+  <h3 class="sub">核心输出指标 <small>KEY METRICS</small></h3>
+  <div class="metric-cards">
+    <div class="card"><div class="t">S11 回波损耗</div><div class="d">蓝牙 2400–2483.5 MHz<br>WiFi 5150–7125 MHz</div></div>
+    <div class="card"><div class="t">辐射效率 Radiated Eff.</div><div class="d">天线辐射功率占比 (%)</div></div>
+    <div class="card"><div class="t">总效率 Total Eff.</div><div class="d">含阻抗失配损耗 (%)</div></div>
+    <div class="card"><div class="t">3D 方向图 Pattern</div><div class="d">增益与辐射方向分布</div></div>
+  </div>
+</section>
+
+<!-- ======= 02 environment ======= -->
+<section class="sec" id="env">
+  <div class="sec-head">
+    <span class="eyebrow">SECTION 02 · ENVIRONMENT</span>
+    <h2>环境准备</h2>
+    <div class="bars"><i class="b1"></i><i class="b2"></i></div>
+  </div>
+
+  <h3 class="sub">系统与软件要求</h3>
+  <div class="grid g2 check">
+    <div class="card"><div class="t"><span class="tick">✓</span>Windows 10 / 11 · 64 位</div><div class="d">建议内存 32GB 及以上，保障 6GHz 频段网格求解</div></div>
+    <div class="card"><div class="t"><span class="tick">✓</span>Ansys AEDT 2025.1+（含 HFSS 许可）</div><div class="d">需启用 HFSS 三维全波电磁求解模块</div></div>
+    <div class="card"><div class="t"><span class="tick">✓</span>Python 3.10 / 3.11</div><div class="d">与 AEDT 及 PyAEDT 版本匹配</div></div>
+    <div class="card"><div class="t"><span class="tick">✓</span>Claude Code CLI</div><div class="d">终端自动化入口，驱动 PyAEDT 脚本执行</div></div>
+  </div>
+
+  <div class="term">
+    <div class="tbar"><i></i><i></i><i></i><span>terminal — 依赖安装</span></div>
+    <pre><span class="p">$ pip install pyaedt pywin32 pandas matplotlib numpy</span>
+<span class="p">$ python -c "import pyaedt"</span>
+<span class="g">✓ 验证通过后即可进入 SOP 第一步</span></pre>
+  </div>
+
+  <div class="deps">
+    <div class="dep"><code>pyaedt</code><span>AEDT 官方 Python API，脚本化全流程</span></div>
+    <div class="dep"><code>pywin32</code><span>Windows COM 进程通信组件</span></div>
+    <div class="dep"><code>pandas / matplotlib / numpy</code><span>结果处理与绘图</span></div>
+  </div>
+
+  <div class="tip"><b>提示：</b>若出现 COM Server Connection Error，需以管理员身份执行 <code>ansysedt.exe -register</code> 注册（详见 <a href="#trouble">06 · 常见问题排查</a>）。</div>
+</section>
+
+<!-- ======= 03 SOP ======= -->
+<section class="sec" id="sop">
+  <div class="sec-head">
+    <span class="eyebrow">SECTION 03 · SIMULATION SOP</span>
+    <h2>仿真 SOP · 四步法</h2>
+    <div class="bars"><i class="b1"></i><i class="b2"></i></div>
+  </div>
+
+  <h3 class="sub">STEP 01 · CAD 模型清理 <small>SOP 1/2 · CAD 处理与材料设置</small></h3>
+  <div class="grid g4">
+    <div class="card"><div class="k">01</div><div class="t">模型修复与简化</div><div class="d">使用 Discovery / SpaceClaim 处理导入模型</div></div>
+    <div class="card"><div class="k">02</div><div class="t">删除非辐射细节</div><div class="d">螺丝、小额倒角、装饰件等不影响辐射性能的特征</div></div>
+    <div class="card"><div class="k">03</div><div class="t">对象分类管理</div><div class="d">ABS+PC 外壳 / 锂电池 / PCB 参考地 / 金属天线弹片与 FPC</div></div>
+    <div class="card"><div class="k">04</div><div class="t">导出 STEP 中性格式</div><div class="d">清理后的模型导出 STEP，供 HFSS 直接导入</div></div>
+  </div>
+  <div class="purpose"><b>目的：</b>降低网格量、缩短求解时间，同时完整保留辐射主体特征。</div>
+
+  <h3 class="sub">STEP 02 · 材料参数设置</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>对象</th><th>材料</th><th class="c">Dk (εr)</th><th class="c">Df (tanδ)</th></tr></thead>
+      <tbody>
+        <tr><td>耳机外壳</td><td>ABS + PC</td><td class="c mono">2.8</td><td class="c mono">0.005</td></tr>
+        <tr><td>PCB 基板</td><td>FR4</td><td class="c mono">4.4</td><td class="c mono">0.02</td></tr>
+        <tr><td>天线 / 弹片</td><td>Copper / PEC</td><td class="c mono">—</td><td class="c mono">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul class="notes">
+    <li>初步仿真可将金属件设为 PEC（理想导体），加快迭代</li>
+    <li>最终验证改用 Copper（含趋肤损耗），结果更贴近实测</li>
+    <li>介质参数以供应商实测数据为准，避免引入系统偏差</li>
+  </ul>
+
+  <h3 class="sub">STEP 03 · 端口与边界条件 <small>SOP 2/2 · 端口、边界与求解设置</small></h3>
+  <div class="grid g3">
+    <div class="card"><div class="k">端口</div><div class="t">50Ω 集总端口（Lumped Port）</div><div class="d">置于天线馈点与 PCB 参考地之间，阻抗 50Ω</div></div>
+    <div class="card"><div class="k">计算空间</div><div class="t">空气盒 Air Box</div><div class="d">包围整机，为辐射场提供计算空间</div></div>
+    <div class="card"><div class="k">外边界</div><div class="t">Radiation 辐射边界</div><div class="d">空气盒外表面设为辐射边界，模拟开放自由空间</div></div>
+  </div>
+  <div class="callout">
+    <div class="ct">空气盒尺寸 ≥ λ/4 @ 2.4 GHz</div>
+    <div class="cf">λ/4 = 3×10⁸ / (4 × 2.4×10⁹) ≈ 31.25 mm</div>
+  </div>
+
+  <h3 class="sub">STEP 04 · 网格与求解设置</h3>
+  <div class="specs">
+    <div class="spec"><span class="k">自适应中心频率</span><span class="v">6.0 GHz</span></div>
+    <div class="spec"><span class="k">自适应迭代次数</span><span class="v">MaxPasses 12–15</span></div>
+    <div class="spec"><span class="k">收敛判据</span><span class="v">MaxDeltaS &lt; 0.02</span></div>
+    <div class="spec"><span class="k">扫频方式</span><span class="v">Interpolating 插值扫频</span></div>
+    <div class="spec"><span class="k">扫频范围</span><span class="v">2.0–7.2 GHz · 521 点</span></div>
+  </div>
+  <div class="note">说明：以最高频段 6.0GHz 自适应求解，保证高频网格精度并覆盖低频。</div>
+</section>
+
+<!-- ======= 04 script part 1 ======= -->
+<section class="sec" id="script">
+  <div class="sec-head">
+    <span class="eyebrow">SECTION 04 · SCRIPT</span>
+    <h2>PyAEDT 自动化脚本</h2>
+    <div class="bars"><i class="b1"></i><i class="b2"></i></div>
+  </div>
+
+  <h3 class="sub">Part 1 · 建模 · 边界 · 端口 <small>tws_antenna_sim.py</small></h3>
+  <div class="code">
+    <div class="code-head"><span class="fn">tws_antenna_sim.py — Part 1 / 2</span><span class="lang">PYTHON · PYAEDT</span></div>
+    <pre><span class="ck">from</span> pyaedt <span class="ck">import</span> Hfss
+
+<span class="cc"># 1. 初始化并连接 Ansys AEDT 2025</span>
+hfss = Hfss(specified_version=<span class="cs">"2025.1"</span>,
+            solution_type=<span class="cs">"Terminal"</span>,
+            new_desktop_session=<span class="ck">True</span>)
+
+<span class="cc"># 2. 导入耳机 3D CAD 模型 (STEP)</span>
+hfss.modeler.import_3d_cad(
+    <span class="cs">r"C:\models\TWS_Earphone_Model.step"</span>)
+
+<span class="cc"># 3. 创建辐射边界 (Air Box)</span>
+hfss.create_open_region(frequency=<span class="cs">"2.4GHz"</span>,
+                        boundary_type=<span class="cs">"Radiation"</span>)
+
+<span class="cc"># 4. 创建 50Ω 集总端口</span>
+hfss.create_lumped_port_to_sheet(
+    sheet_name=<span class="cs">"Port_Sheet"</span>,
+    portname=<span class="cs">"Port1"</span>, impedance=<span class="cn">50</span>)</pre>
+  </div>
+  <div class="note">脚本通过 PyAEDT 以 Terminal 求解类型连接 AEDT 2025.1，依次完成 CAD 导入、辐射边界创建与 50Ω 集总端口设置。</div>
+
+  <h3 class="sub">Part 2 · 求解 · 扫频 · 导出 <small>tws_antenna_sim.py</small></h3>
+  <div class="code">
+    <div class="code-head"><span class="fn">tws_antenna_sim.py — Part 2 / 2</span><span class="lang">PYTHON · PYAEDT</span></div>
+    <pre><span class="cc"># 5. 求解 Setup：中心 6.0GHz，自适应 12 次</span>
+setup = hfss.create_setup(<span class="cs">"TWS_Setup_6G"</span>)
+setup.props[<span class="cs">"Frequency"</span>] = <span class="cs">"6.0GHz"</span>
+setup.props[<span class="cs">"MaximumPasses"</span>] = <span class="cn">12</span>
+setup.props[<span class="cs">"MaxDeltaS"</span>] = <span class="cn">0.02</span>
+
+<span class="cc"># 6. 宽带扫频 2.0–7.2GHz，521 点</span>
+hfss.create_frequency_sweep(
+    setupname=<span class="cs">"TWS_Setup_6G"</span>,
+    sweepname=<span class="cs">"Wideband_Sweep"</span>,
+    start_frequency=<span class="cs">"2.0GHz"</span>,
+    stop_frequency=<span class="cs">"7.2GHz"</span>,
+    num_of_freq_points=<span class="cn">521</span>,
+    sweep_type=<span class="cs">"Interpolating"</span>)
+
+<span class="cc"># 7. 求解并导出 S11 / 效率数据</span>
+hfss.analyze_setup(<span class="cs">"TWS_Setup_6G"</span>)
+s11 = hfss.post.get_solution_data(
+    <span class="cs">"dB(S(Port1,Port1))"</span>, <span class="cs">"TWS_Setup_6G : Wideband_Sweep"</span>)
+s11.export_data_to_csv(<span class="cs">r"C:\results\TWS_S11_Results.csv"</span>)</pre>
+  </div>
+  <div class="note">以 6.0GHz 自适应求解保证高频网格精度；Interpolating 扫频 2.0–7.2GHz 共 521 点覆盖全部目标频段；结果自动导出 CSV 供报告使用。</div>
+</section>
+
+<!-- ======= 04 parametrics ======= -->
+<section class="sec" id="params">
+  <div class="sec-head">
+    <span class="eyebrow">SECTION 04 · PARAMETRICS</span>
+    <h2>天线长度扫参 · Optimetrics 参数化设计</h2>
+    <div class="bars"><i class="b1"></i><i class="b2"></i></div>
+  </div>
+
+  <div class="code">
+    <div class="code-head"><span class="fn">tws_param_sweep.py</span><span class="lang">PYTHON · OPTIMETRICS</span></div>
+    <pre><span class="cc"># 1. 定义设计变量：天线弹片长度（CAD 参数化）</span>
+hfss[<span class="cs">"ant_len"</span>] = <span class="cs">"10.5mm"</span>
+
+<span class="cc"># 2. 扫参：8–12 mm，步长 0.5 mm（9 个设计点）</span>
+sweep = hfss.parametrics.add(
+    variable_name=<span class="cs">"ant_len"</span>,
+    start_value=<span class="cs">"8mm"</span>, end_value=<span class="cs">"12mm"</span>,
+    step=<span class="cs">"0.5mm"</span>, setupname=<span class="cs">"TWS_Setup_6G"</span>)
+
+<span class="cc"># 3. 批量求解全部参数组合</span>
+hfss.analyze_setup(sweep.name)
+
+<span class="cc"># 4. 逐长度提取 S11 峰值 → 选出最优长度</span>
+<span class="ck">for</span> L <span class="ck">in</span> [<span class="cs">"8mm"</span>, <span class="cs">"8.5mm"</span>, <span class="cs">"9mm"</span>, <span class="cs">"9.5mm"</span>, <span class="cs">"10mm"</span>,
+          <span class="cs">"10.5mm"</span>, <span class="cs">"11mm"</span>, <span class="cs">"11.5mm"</span>, <span class="cs">"12mm"</span>]:
+    s11 = hfss.post.get_solution_data(
+        <span class="cs">"dB(S(Port1,Port1))"</span>,
+        <span class="cs">"TWS_Setup_6G : Wideband_Sweep"</span>,
+        variations={<span class="cs">"ant_len"</span>: [L]})</pre>
+  </div>
+
+  <div class="tbl-wrap" style="margin-top:18px">
+    <table class="tbl">
+      <thead><tr><th>天线长度 L (mm)</th><th class="c">S11 峰值 (dB)</th><th class="c">谐振频点 (GHz)</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">8.0</td><td class="c mono">−12.1</td><td class="c mono">2.60</td></tr>
+        <tr><td class="mono">8.5</td><td class="c mono">−13.8</td><td class="c mono">2.57</td></tr>
+        <tr><td class="mono">9.0</td><td class="c mono">−15.4</td><td class="c mono">2.54</td></tr>
+        <tr><td class="mono">9.5</td><td class="c mono">−16.9</td><td class="c mono">2.50</td></tr>
+        <tr><td class="mono">10.0</td><td class="c mono">−18.0</td><td class="c mono">2.47</td></tr>
+        <tr class="hl"><td class="mono">10.5&nbsp;&nbsp;★</td><td class="c mono">−18.5</td><td class="c mono">2.45</td></tr>
+        <tr><td class="mono">11.0</td><td class="c mono">−17.8</td><td class="c mono">2.42</td></tr>
+        <tr><td class="mono">11.5</td><td class="c mono">−16.3</td><td class="c mono">2.39</td></tr>
+        <tr><td class="mono">12.0</td><td class="c mono">−14.6</td><td class="c mono">2.37</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">最优 L = 10.5 mm → S11 −18.5 dB @ 2.45 GHz，谐振精确落在蓝牙频段中心；天线越长谐振频率越低，可按此规律二次微调。</div>
+</section>
+
+<!-- ======= 05 results ======= -->
+<section class="sec" id="results">
+  <div class="sec-head">
+    <span class="eyebrow">SECTION 05 · RESULTS</span>
+    <h2>仿真结果与评估</h2>
+    <div class="bars"><i class="b1"></i><i class="b2"></i></div>
+  </div>
+
+  <h3 class="sub">方案亮点与关键指标 <small>HIGHLIGHTS</small></h3>
+  <div class="grid g4">
+    <div class="stat gold"><div class="num">300<span class="unit">%</span></div><div class="lab">迭代效率提升</div><div class="desc">单轮仿真周期：天级 → 小时级</div></div>
+    <div class="stat"><div class="num">−18.5<span class="unit">dB</span></div><div class="lab">S11 峰值 @ 2.45GHz</div><div class="desc">阻抗匹配良好，回波损耗充足</div></div>
+    <div class="stat"><div class="num">2.38–2.52<span class="unit">GHz</span></div><div class="lab">−10dB 带宽（2.4G）</div><div class="desc">完整覆盖蓝牙 2400–2483.5 MHz</div></div>
+    <div class="stat gold"><div class="num">&lt; −12<span class="unit">dB</span></div><div class="lab">5G / 6E 频段 S11</div><div class="desc">5.2 / 5.8 / 6.5 GHz 全部达标</div></div>
+  </div>
+
+  <div class="axis-card">
+    <span class="at">频段覆盖与扫频范围</span><span class="as">2.0–7.2 GHz · Interpolating · 521 点</span>
+    <div class="axis">
+      <div class="line"></div>
+      <span class="tick" style="left:0%">2</span>
+      <span class="tick" style="left:20%">3</span>
+      <span class="tick" style="left:40%">4</span>
+      <span class="tick" style="left:60%">5</span>
+      <span class="tick" style="left:80%">6</span>
+      <span class="tick" style="left:100%">7 GHz</span>
+      <span class="blab blue" style="left:7.2%">蓝牙 2.4G<small>2.36–2.52 GHz</small></span>
+      <div class="bar blue" style="left:7.2%; width:3.2%"></div>
+      <span class="blab blue" style="left:63%">WiFi 5G<small>5.15–5.85 GHz</small></span>
+      <div class="bar blue" style="left:63%; width:14%"></div>
+      <span class="blab gold" style="left:79%">WiFi 6E<small>5.95–7.125 GHz · 5150–7125 MHz</small></span>
+      <div class="bar gold" style="left:79%; width:23.5%"></div>
+    </div>
+  </div>
+
+  <h3 class="sub">效率矩阵与频段评估</h3>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>频段</th><th class="c">中心频点</th><th class="c">辐射效率</th><th class="c">总效率</th><th class="c">评估</th></tr></thead>
+      <tbody>
+        <tr><td>2.4G 蓝牙</td><td class="c mono">2.45 GHz</td><td class="c mono">68.5% (−1.64 dB)</td><td class="c mono">62.1% (−2.07 dB)</td><td class="c"><span class="badge gold">优秀</span></td></tr>
+        <tr><td>WiFi 5G</td><td class="c mono">5.25 GHz</td><td class="c mono">61.2% (−2.13 dB)</td><td class="c mono">55.4% (−2.56 dB)</td><td class="c"><span class="badge blue">达标</span></td></tr>
+        <tr><td>WiFi 6E</td><td class="c mono">6.50 GHz</td><td class="c mono">58.0% (−2.36 dB)</td><td class="c mono">51.2% (−2.91 dB)</td><td class="c"><span class="badge blue">达标</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub">S11 关键结果</h3>
+  <ul class="notes">
+    <li>2.45 GHz 峰值 S11 = −18.5 dB，阻抗匹配良好</li>
+    <li>−10 dB 带宽 2.38–2.52 GHz，覆盖蓝牙全频段</li>
+    <li>5.2 / 5.8 / 6.5 GHz 均 &lt; −12 dB，5G / 6E 达标</li>
+  </ul>
+
+  <div class="chart-panel">
+    <div class="cp-head">
+      <span class="cp-t">各频段效率对比（%）</span>
+      <div class="legend"><span class="l1"><i></i>辐射效率</span><span class="l2"><i></i>总效率</span></div>
+    </div>
+    <div class="bars-area">
+      <div class="limit"><span>50% 量产指标</span></div>
+      <div class="bgroups">
+        <div class="bgroup">
+          <div class="pair">
+            <div class="bcol r"><span class="val">68.5</span><div class="bar" style="height:68.5%"></div></div>
+            <div class="bcol t"><span class="val">62.1</span><div class="bar" style="height:62.1%"></div></div>
+          </div>
+        </div>
+        <div class="bgroup">
+          <div class="pair">
+            <div class="bcol r"><span class="val">61.2</span><div class="bar" style="height:61.2%"></div></div>
+            <div class="bcol t"><span class="val">55.4</span><div class="bar" style="height:55.4%"></div></div>
+          </div>
+        </div>
+        <div class="bgroup">
+          <div class="pair">
+            <div class="bcol r"><span class="val">58.0</span><div class="bar" style="height:58%"></div></div>
+            <div class="bcol t"><span class="val">51.2</span><div class="bar" style="height:51.2%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bgroups" style="height:auto; margin-top:0">
+      <div class="bglab">2.4G 蓝牙 · 2.45GHz</div>
+      <div class="bglab">WiFi 5G · 5.25GHz</div>
+      <div class="bglab">WiFi 6E · 6.5GHz</div>
+    </div>
+  </div>
+
+  <div class="concl"><b>✓ 结论：</b>2.4G 辐射效率 &gt; 60%，三频段总效率均 &gt; 50%，满足量产指标（&gt;50%），可进入整机联调阶段。</div>
+
+  <h3 class="sub">S11 回波损耗曲线（dB）</h3>
+  <div class="fig">
+    <div class="chart-card"><img src="assets/image1.png" alt="S11 回波损耗曲线 2.0–7.2 GHz"></div>
+    <div class="side">
+      <div class="card gold"><div class="k">2.45 GHz 峰值</div><div class="num">−18.5 dB</div><div class="d">阻抗匹配良好</div></div>
+      <div class="card"><div class="k">−10 dB 带宽</div><div class="num">2.38–2.52 GHz</div><div class="d">完整覆盖蓝牙频段</div></div>
+      <div class="card"><div class="k">5G / 6E 频段</div><div class="num">&lt; −12 dB</div><div class="d">5150–7125 MHz 达标</div></div>
+    </div>
+  </div>
+  <div class="note">曲线依据报告关键数据（−18.5 dB @ 2.45 GHz、−10 dB 带宽 2.38–2.52 GHz、5G/6E &lt; −12 dB）绘制，蓝色区域为目标工作频段。</div>
+
+  <h3 class="sub">天线效率曲线（dB）</h3>
+  <div class="fig">
+    <div class="chart-card"><img src="assets/image2.png" alt="天线辐射效率与总效率曲线 2.0–7.2 GHz"></div>
+    <div class="side">
+      <div class="card gold"><div class="k">2.45 GHz 辐射效率</div><div class="num">−1.64 dB</div><div class="d">≈ 68.5%，三频段最优</div></div>
+      <div class="card"><div class="k">三频段总效率</div><div class="num">&gt; −3 dB</div><div class="d">均 &gt; 50%，满足量产指标</div></div>
+      <div class="card"><div class="k">频段间凹陷</div><div class="num">≈ −11 dB</div><div class="d">非工作频段，属正常现象</div></div>
+    </div>
+  </div>
+  <div class="note">总效率 = 辐射效率 × (1 − |Γ|²)，已含阻抗失配损耗；三频段效率值与结果页矩阵一致，蓝色区域为目标工作频段。</div>
+</section>
+
+<!-- ======= 06 troubleshooting ======= -->
+<section class="sec" id="trouble">
+  <div class="sec-head">
+    <span class="eyebrow">SECTION 06 · TROUBLESHOOTING</span>
+    <h2>常见问题排查</h2>
+    <div class="bars"><i class="b1"></i><i class="b2"></i></div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-head"><span class="qn">Q1</span><span class="qt">COM Server Connection Error</span></div>
+    <div class="sym"><b>现象</b>PyAEDT 启动 / 连接 AEDT 时报 COM Server Connection Error。</div>
+    <ol>
+      <li><i>1</i>以管理员身份打开 CMD（命令提示符）</li>
+      <li><i>2</i>执行注册命令（见下方）</li>
+      <li><i>3</i>注册完成后重启 Python / Claude Code 会话</li>
+    </ol>
+    <div class="sol">
+      <span class="sk">SOLUTION</span>
+      <code>ansysedt.exe -gracesilent -register</code>
+      <div class="sd">以管理员身份运行一次即可</div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-head"><span class="qn">Q2</span><span class="qt">6GHz 附近网格收敛慢</span></div>
+    <div class="sym"><b>现象</b>6GHz 附近自适应网格迭代次数多、收敛慢，单次求解耗时显著增加。</div>
+    <ol>
+      <li><i>1</i>对天线弹片与馈电区域进行局部网格加密</li>
+      <li><i>2</i>限制最大网格尺寸 max mesh ≤ 1.5mm</li>
+      <li><i>3</i>收敛速度显著提升，高频精度不受影响</li>
+    </ol>
+    <div class="sol">
+      <span class="sk">KEY PARAM</span>
+      <code>max mesh ≤ 1.5 mm</code>
+      <div class="sd">仅加密弹片与馈电区域</div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= end ======= -->
+<section class="end">
+  <div class="rings"><i></i><i></i><i></i><i></i></div>
+  <h2>谢谢观看</h2>
+  <div class="gbar"></div>
+  <div class="l1">Ansys AEDT 2025 (HFSS) × Claude Code (PyAEDT)</div>
+  <div class="l2">TWS 耳机 2.4G / 5G / 6E 多频段天线仿真 SOP 与工程报告</div>
+  <div class="chips">
+    <span class="chip">2.4G 蓝牙</span><span class="chip">5G WiFi</span><span class="chip">6E WiFi · 6GHz</span>
+  </div>
+  <div class="date">2026 年 8 月</div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>TWS 耳机多频段天线仿真 · Ansys AEDT 2025 (HFSS) × Claude Code + PyAEDT</span>
+    <span>GitHub Pages · 2026</span>
+  </div>
+</footer>
+
+</body>
+</html>
